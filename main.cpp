@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
@@ -8,7 +9,7 @@
 using namespace std;
 //动态规划法做的
 int uniquePaths(int m, int n) {
-    int f[102][102] = {0};
+    int f[102][102] = {{0}};
     for(int i=1;i<=m;++i)
     {
         for(int j=1;j<=n;++j)
@@ -121,7 +122,8 @@ void fastSort(vector<int>& a)
     int end = len -1;
     oneSort(a,beg,end);
 }
-
+namespace Beibao
+{
 //回溯法解决0-1背包问题
 //将不同价值的物品放入固定容量的背包，如何使背包中物品价值最高
 //结果集是一个完全二叉树，遍历一遍
@@ -175,16 +177,178 @@ void beibao(int t)
     }
 }
 
+}//只是为了把背包问题的代码放入模块不影响其他算法
+
+//八皇后问题
+//问题：在n×n格的棋盘上放置彼此不受攻击的n个皇后。按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
+//N皇后问题等价于在n×n格的棋盘上放置n个皇后，任何2个皇后不放在同一行或同一列或同一斜线上。
+namespace Huanghou
+{
+const int N = 8;
+//用来表示棋盘，0表示没有皇后，1表示有皇后
+int Board[N][N] = {{0}};
+//方法的数量
+int way = 0;
+//判断皇后放到这个位置是否可以，即同一行，同一列，对应的斜线上是否已经放了皇后
+bool isConflict(int m,int n)
+{
+    if(m>N || n>N || n<0||m<0) return false;
+
+    //判断当前位置是否有皇后
+    if(Board[m][n] == 1) return false;
+
+    //判断行和列是否有皇后
+    for(int i=0;i<N;++i)
+    {
+        if(Board[i][n] == 1 || Board[m][i] == 1) return false;
+    }
+
+    //判断斜线上是否有皇后
+    for(int i=1;i<N;++i)
+    {
+        //左上角
+        if((m-i)>=0&&(n-i)>=0) //判断位置合法
+        {
+            if(Board[m-i][n-i]==1)
+            {
+                return false;
+            }
+        }
+        //右上角
+        if((m-i)>=0&&(n+i)<N)
+        {
+            if(Board[m-i][n+i] == 1)
+            {
+                return false;
+            }
+        }
+        //左下角
+        if((m+i)<N&&(n-i)>=0)
+        {
+            if(Board[m+i][n-i] == 1)
+            {
+                return false;
+            }
+        }
+        //右下角
+        if((m+i)<N&&(n+i)<N)
+        {
+            if(Board[m+i][n+i] == 1)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void huanghou(int t)
+{
+    if(t>N)
+    {
+        way++;
+    }
+    else
+    {
+        for(int i=0;i<N;++i)
+        {
+            for(int j=0;j<N;++j)
+            {
+                if(isConflict(i,j))
+                {
+                    Board[i][j] = 1;
+                    huanghou(t+1);
+                    Board[i][j] = 0;
+                }
+            }
+        }
+    }
+}
+//阶乘
+int jiecheng(int n)
+{
+    int result = 1;
+    for(int i=1;i<=n;++i)
+    {
+        result *= i;
+    }
+    return result;
+}
+
+
+//另一种解法：由于性质可了解到每一行只能有一个皇后,因此可以放每一个皇后的时候只遍历当前行即可
+void new_huanghou(int t)
+{
+    if(t>N-1)
+    {
+        way++;
+        return;
+    }
+    for(int i=0;i<N;i++)
+    {
+        //因为是一行一行的放，只需要判断前面的行是否有冲突的即可，即前面的行，左上角，右上角
+        if(isConflict(t,i))
+        {
+            Board[t][i] = 1;
+            new_huanghou(t+1);
+            Board[t][i] = 0;
+        }
+    }
+}
+
+//用一个一维数组来存放每一行皇后的位置
+int a[N];
+bool isRight(int m,int n)
+{
+    //判断对角线相等用行的差的绝对值等于列的差的绝对值说明在同一个斜线
+    for(int i=0;i<m;++i)
+    {
+        if(a[i]==n||abs(m-i)==abs(n-a[i]))return false;
+    }
+    return true;
+}
+
+void one_huanghou(int t)
+{
+    if(t>N-1)
+    {
+        way++;
+        return ;
+    }
+    for(int i=0;i<N;++i)
+    {
+        if(isRight(t,i))
+        {
+            a[t] = i;
+            one_huanghou(t+1);
+            a[t] = -1;
+        }
+    }
+}
+
+//运行八皇后的函数
+void run_huanghou()
+{
+    for(int i=0;i<N;++i)
+    {
+        a[i] = -1;
+        for(int j=0;j<N;++j)
+            Board[i][j] = 0;
+    }
+    time_t beg = time(NULL);
+    way = 0;
+//    huanghou(1);//这个要用120
+//    new_huanghou(0); //这个一秒都不到
+    one_huanghou(0);
+    time_t end = time(NULL);
+
+    cout<<"way:"<<way<<" time:"<<end-beg<<endl;
+    cout<<"way:"<<way/jiecheng(N)<<" time:"<<end-beg<<endl;
+}
+}
+
 int main()
 {
-    //cout<<uniquePaths(1,2)<<endl;
-    cout<<sizeof(testS)<<endl;
-    //const char* a = "test";
-    //char* b = new char[10];
-    //mycopy(b,a);
-    //cout<<"test:"<<b<<endl;
-    vector<int> x = {3,4,1,5,2,29,4,33,2};
-    //heapSort(x);
-    beibao(0);
-    for(auto v:bestx)cout<<v<<",";
+//    vector<int> x = {3,4,1,5,2,29,4,33,2};
+    Huanghou::run_huanghou();
 }
