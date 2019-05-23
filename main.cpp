@@ -347,6 +347,106 @@ void run_huanghou()
 }
 }
 
+namespace Lujing
+{
+//请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则之后不能再次进入这个格子。 例如 a b c e s f c s a d e e 这样的3 X 4 矩阵中包含一条字符串"bcced"的路径，但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+
+bool one_has(char* matrix,int M,int N,char* str,int m,int n,vector<vector<int> >& a,int x)
+{
+    if(str[x] == '\0') return true;
+    if(m>M-1 || n>N-1||m<0||n<0) return false; //不合法
+    if(a[m][n] == 1) return false;
+    if(matrix[m*N+n] != str[x]) return false;
+
+    bool flag = false;
+    a[m][n] = 1;
+    //向左走
+    if(!flag) 
+    {
+        flag = one_has(matrix,M,N,str,m,n-1,a,x+1);
+    }
+    //向右走
+    if(!flag) 
+    {
+        flag = one_has(matrix,M,N,str,m,n+1,a,x+1);
+    }
+    //向上走
+    if(!flag) 
+    {
+        flag = one_has(matrix,M,N,str,m-1,n,a,x+1);
+    }
+    //向下走
+    if(!flag) 
+    {
+        flag = one_has(matrix,M,N,str,m+1,n,a,x+1);
+    }
+
+    a[m][n] = 0;
+    return flag;
+}
+//回溯法解决，从任意一个点可以开始，然后分别向上下左右四个点走，判断是否匹配
+bool hasPath(char* matrix, int rows, int cols, char* str)
+{
+    //初始化一个数组来表示这个点是否被访问过
+    vector<vector<int> > a(rows,vector<int>(cols,0));
+    bool flag = false;
+    for(int i=0;i<rows;++i)
+    {
+        for(int j=0;j<cols;++j)
+        {
+            flag = one_has(matrix,rows,cols,str,i,j,a,0);
+            if(flag)
+            {
+                return true;
+            }
+        }
+    }
+    return flag;
+}
+}
+class RobotMove{
+//地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。 例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+public:
+    bool isRight(int t,int x,int y)
+    {
+        int res = 0;
+        while(x)
+        {
+            res += x%10;
+            x /= 10;
+        }
+        while(y)
+        {
+            res += y%10;
+            y /= 10;
+        }
+
+        return res>t?false:true;
+    }
+    bool move(int threshold,int M,int N,vector<int>& isOk,int& count,int m,int n)
+    {
+        if(m>M||m<0||n>N||n<0) return false;
+        if(isOk[m*N+n]) return false;
+        if(!isRight(threshold,m,n)) return false;
+
+        isOk[m*N+n] = 1;
+        count++;
+        move(threshold,M,N,isOk,count,m-1,n);
+        move(threshold,M,N,isOk,count,m+1,n);
+        move(threshold,M,N,isOk,count,m,n+1);
+        move(threshold,M,N,isOk,count,m,n-1);
+        return true;
+    }
+    int movingCount(int threshold, int rows, int cols)
+    {
+        //用来表示是否已经走过这个点
+        vector<int> isOk(rows*cols,0);
+        int count = 0;
+        move(threshold,rows,cols,isOk,count,0,0);
+        return count;
+    }
+};
+
 int main()
 {
 //    vector<int> x = {3,4,1,5,2,29,4,33,2};
