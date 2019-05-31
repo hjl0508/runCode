@@ -447,8 +447,85 @@ public:
     }
 };
 
+class Test
+{
+public:
+    int a = 0;
+    void print_test()
+    {
+        cout<<__FUNCTION__<<endl;
+        cout<<__func__<<endl;
+    }
+};
+
+#include <thread>
+void threadfun1()
+{
+    std::cout << "threadfun1 - 1\r\n" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "threadfun1 - 2" << std::endl;
+}
+
+void threadfun2(int iParam, std::string sParam)
+{
+    std::cout << "threadfun2 - 1" << std::endl;
+    cout<<"threadfun2 -1:"<<iParam<<","<<sParam<<endl;
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::cout << "threadfun2 - 2" << std::endl;
+}
+
+int test_thread()
+{
+    std::thread t1(threadfun1);
+    std::thread t2(threadfun2, 10, "abc");
+    t1.join();
+    std::cout << "join" << std::endl;
+    t2.detach();
+    std::cout << "detach" << std::endl;
+    return 0;
+}
+
+class FindCount {
+    //统计一个数字在排序数组中出现的次数。
+    //这个因为都是整数，可以换一个角度分别找k-0.5和k+0.5 ，这样就能找到第一个k和第一个大于k的数的下标
+public:
+    int midSearch(vector<int> &data,double f)
+    {
+        int beg = 0;
+        int end = data.size()-1;
+        while(beg <= end)
+        {
+            int mid = (end+beg)/2;
+            if(data[mid]<f)
+            {
+                beg = mid+1;
+            }
+            else if(data[mid] > f)
+            {
+                end = mid-1;
+            }
+            
+        }
+        return beg;
+    }
+    int GetNumberOfK(vector<int> data ,int k) {
+        if(data.size()==0) return 0;
+        int beg = midSearch(data,k-0.5);
+        int end = midSearch(data,k+0.5);
+        cout<<beg<<","<<end<<endl;
+        return end-beg;
+    }
+};
+
 int main()
 {
 //    vector<int> x = {3,4,1,5,2,29,4,33,2};
-    Huanghou::run_huanghou();
+//    Huanghou::run_huanghou();
+    Test t;
+    t.print_test();
+    test_thread();
+    FindCount f;
+    vector<int> a{3};
+    int k = 3;
+    f.GetNumberOfK(a,k);
 }
