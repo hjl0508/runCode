@@ -517,15 +517,84 @@ public:
     }
 };
 
+class FindMid {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int len1 = nums1.size();
+        int len2 = nums2.size();
+        vector<int> num3;
+        for(int i=0,j=0;i<len1||j<len2;)
+        {
+            if((i>=len1&&j<len2)||nums1[i]>nums2[j])
+            {
+                num3.push_back(nums2[j]);
+                j++;
+            }
+            else if((j>=len2&&i<len1) || nums1[i]<=nums2[j])
+            {
+                num3.push_back(nums1[i]);
+                i++;
+            }
+            
+        }
+        double result = 0;
+        if((len1+len2)%2==0)
+        {
+            result =  (num3[(len1+len2)/2]+num3[(len1+len2)/2-1])/2;
+        }
+        else
+        {
+            result =  num3[(len1+len2)/2];
+        }
+        return result;
+    }
+};
+
+class TestF
+{
+    public:
+    int a = 1;
+    virtual void print()
+    {
+        cout <<a<<","<<b<<endl;
+    }
+    void test()
+    {
+        cout<<"testf"<<endl;
+    }
+    private:
+    //子类果然无法访问父类的私有成员
+    int b = 2;
+};
+class TestC:public TestF
+{
+    public:
+    void print1()
+    {
+        cout<<"test:"<<a<<","<<endl;
+    }
+    void test()
+    {
+        cout<<"testc"<<endl;
+    }
+};
+
 int main()
 {
 //    vector<int> x = {3,4,1,5,2,29,4,33,2};
 //    Huanghou::run_huanghou();
-    Test t;
-    t.print_test();
-    test_thread();
-    FindCount f;
-    vector<int> a{3};
-    int k = 3;
-    f.GetNumberOfK(a,k);
+//    Test t;
+//    t.print_test();
+//    test_thread();
+//    FindCount f;
+//    vector<int> a{3};
+//    int k = 3;
+//    f.GetNumberOfK(a,k);
+//    vector<int> a{1,3};
+//    vector<int> b{2};
+//    FindMid f;
+//    cout<<f.findMedianSortedArrays(a,b);
+    TestF *f = new TestC;
+    f->print();
+    f->test();
 }
