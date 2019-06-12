@@ -169,3 +169,9 @@ public:
         return head;
     }
 };
+
+
+int main()
+{
+    cout<<"main"<<endl;
+}
